@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2, Eye, MoreHorizontal, PencilLine } from 'lucide-react'
+import { Plus, Trash2, MoreHorizontal, PencilLine } from 'lucide-react'
 import { toast } from 'sonner'
 import { surveysApi } from '@/lib/surveys'
 import { Button } from '@/components/ui/button'
@@ -226,10 +226,6 @@ export default function SurveysPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => navigate(`/surveys/${s.id}`)}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          Open
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate(`/surveys/${s.id}/edit`)}>
                           <PencilLine className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
