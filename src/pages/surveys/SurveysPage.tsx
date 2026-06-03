@@ -136,7 +136,7 @@ export default function SurveysPage() {
   })
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold">Surveys</h1>
@@ -172,9 +172,9 @@ export default function SurveysPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Slug</TableHead>
+              <TableHead className="hidden sm:table-cell">Slug</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Questions</TableHead>
+              <TableHead className="hidden sm:table-cell text-right">Questions</TableHead>
               <TableHead className="w-12" />
             </TableRow>
           </TableHeader>
@@ -182,11 +182,11 @@ export default function SurveysPage() {
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <TableCell key={j}>
-                      <Skeleton className="h-4 w-full" />
-                    </TableCell>
-                  ))}
+                  <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-full" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-8" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                 </TableRow>
               ))
             ) : surveys?.length === 0 ? (
@@ -205,7 +205,7 @@ export default function SurveysPage() {
                     {s.title}
                   </TableCell>
                   <TableCell
-                    className="text-muted-foreground font-mono text-xs"
+                    className="hidden sm:table-cell text-muted-foreground font-mono text-xs"
                     onClick={() => navigate(`/surveys/${s.id}`)}
                   >
                     {s.slug}
@@ -214,7 +214,7 @@ export default function SurveysPage() {
                     <Badge variant={statusVariant[s.status]}>{s.status}</Badge>
                   </TableCell>
                   <TableCell
-                    className="text-right"
+                    className="hidden sm:table-cell text-right"
                     onClick={() => navigate(`/surveys/${s.id}`)}
                   >
                     {s.question_count}

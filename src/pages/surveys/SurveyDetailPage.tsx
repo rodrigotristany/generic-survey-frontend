@@ -402,7 +402,7 @@ export default function SurveyDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8 max-w-4xl mx-auto flex flex-col gap-4">
+      <div className="p-4 sm:p-6 md:p-8 max-w-4xl mx-auto flex flex-col gap-4">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-4 w-40" />
         <Skeleton className="h-40 w-full" />
@@ -419,8 +419,8 @@ export default function SurveyDetailPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
+    <div className="p-4 sm:p-6 md:p-8 max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
         <div>
           <button
             onClick={() => navigate('/surveys')}
@@ -438,14 +438,14 @@ export default function SurveyDetailPage() {
             <span className="text-xs text-muted-foreground font-mono">{survey.slug}</span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate(`/surveys/${id}/responses`)}
           >
-            <BarChart2 className="w-4 h-4 mr-1.5" />
-            Responses
+            <BarChart2 className="w-4 h-4 sm:mr-1.5" />
+            <span className="hidden sm:inline">Responses</span>
           </Button>
           {nextStatus[survey.status] && (
             <Button
@@ -483,8 +483,8 @@ export default function SurveyDetailPage() {
                   variant="ghost"
                   onClick={() => setDialog({ type: 'group', section })}
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1" />
-                  Group
+                  <Plus className="w-3.5 h-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">Group</span>
                 </Button>
                 <Button
                   size="sm"

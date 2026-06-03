@@ -90,7 +90,7 @@ export default function ResponsesPage() {
   })
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
       <button
         onClick={() => navigate(`/surveys/${id}`)}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
@@ -116,9 +116,9 @@ export default function ResponsesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Response ID</TableHead>
-              <TableHead>User</TableHead>
+              <TableHead className="hidden sm:table-cell">User</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Submitted</TableHead>
+              <TableHead className="hidden sm:table-cell">Submitted</TableHead>
               <TableHead className="w-16" />
             </TableRow>
           </TableHeader>
@@ -126,11 +126,11 @@ export default function ResponsesPage() {
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <TableCell key={j}>
-                      <Skeleton className="h-4 w-full" />
-                    </TableCell>
-                  ))}
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                 </TableRow>
               ))
             ) : responses?.length === 0 ? (
@@ -145,7 +145,7 @@ export default function ResponsesPage() {
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {r.id.slice(0, 8)}…
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="hidden sm:table-cell text-sm">
                     {r.user_id ? r.user_id.slice(0, 8) + '…' : 'Anonymous'}
                   </TableCell>
                   <TableCell>
@@ -153,7 +153,7 @@ export default function ResponsesPage() {
                       {r.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                     {r.submitted_at
                       ? new Date(r.submitted_at).toLocaleString()
                       : '—'}
