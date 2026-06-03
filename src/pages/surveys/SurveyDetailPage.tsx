@@ -32,7 +32,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
@@ -340,11 +339,48 @@ function AddQuestionDialog({
   )
 }
 
+function ConfirmDialog({
+  open,
+  message,
+  isPending,
+  onConfirm,
+  onClose,
+}: {
+  open: boolean
+  message: string
+  isPending: boolean
+  onConfirm: () => void
+  onClose: () => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Are you sure?</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">{message}</p>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
+          <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
+            {isPending ? 'Deleting…' : 'Delete'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 type DialogState =
   | { type: 'none' }
   | { type: 'section' }
   | { type: 'group'; section: SectionOut }
   | { type: 'question'; section: SectionOut; group: SurveyGroupOut }
+
+type DeleteTarget =
+  | { type: 'none' }
+  | { type: 'section'; sec_id: string; label: string }
+  | { type: 'group'; sec_id: string; gid: string; label: string }
+  | { type: 'question'; sec_id: string; gid: string; gqid: string; label: string }
 
 export default function SurveyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -352,6 +388,7 @@ export default function SurveyDetailPage() {
   const qc = useQueryClient()
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
   const [dialog, setDialog] = useState<DialogState>({ type: 'none' })
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>({ type: 'none' })
 
   const { data: survey, isLoading } = useQuery({
     queryKey: ['survey', id],
@@ -361,19 +398,23 @@ export default function SurveyDetailPage() {
 
   const deleteSection = useMutation({
     mutationFn: (sec_id: string) => surveysApi.deleteSection(id!, sec_id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', id] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', id] })
       toast.success('Section deleted')
+      setDeleteTarget({ type: 'none' })
     },
+    onError: () => toast.error('Failed to delete section'),
   })
 
   const deleteGroup = useMutation({
     mutationFn: ({ sec_id, gid }: { sec_id: string; gid: string }) =>
       surveysApi.deleteGroup(id!, sec_id, gid),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', id] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', id] })
       toast.success('Group deleted')
+      setDeleteTarget({ type: 'none' })
     },
+    onError: () => toast.error('Failed to delete group'),
   })
 
   const removeQuestion = useMutation({
@@ -386,10 +427,12 @@ export default function SurveyDetailPage() {
       gid: string
       gqid: string
     }) => surveysApi.removeGroupQuestion(id!, sec_id, gid, gqid),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', id] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', id] })
       toast.success('Question removed')
+      setDeleteTarget({ type: 'none' })
     },
+    onError: () => toast.error('Failed to remove question'),
   })
 
   const updateStatus = useMutation({
@@ -399,6 +442,21 @@ export default function SurveyDetailPage() {
 
   const toggle = (key: string) =>
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }))
+
+  const isDeletePending =
+    deleteSection.isPending || deleteGroup.isPending || removeQuestion.isPending
+
+  const confirmDelete = () => {
+    if (deleteTarget.type === 'section') deleteSection.mutate(deleteTarget.sec_id)
+    else if (deleteTarget.type === 'group')
+      deleteGroup.mutate({ sec_id: deleteTarget.sec_id, gid: deleteTarget.gid })
+    else if (deleteTarget.type === 'question')
+      removeQuestion.mutate({
+        sec_id: deleteTarget.sec_id,
+        gid: deleteTarget.gid,
+        gqid: deleteTarget.gqid,
+      })
+  }
 
   if (isLoading) {
     return (
@@ -490,7 +548,9 @@ export default function SurveyDetailPage() {
                   size="sm"
                   variant="ghost"
                   className="text-destructive"
-                  onClick={() => deleteSection.mutate(section.id)}
+                  onClick={() =>
+                    setDeleteTarget({ type: 'section', sec_id: section.id, label: section.title })
+                  }
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
@@ -531,7 +591,12 @@ export default function SurveyDetailPage() {
                           variant="ghost"
                           className="h-7 text-destructive"
                           onClick={() =>
-                            deleteGroup.mutate({ sec_id: section.id, gid: group.id })
+                            setDeleteTarget({
+                              type: 'group',
+                              sec_id: section.id,
+                              gid: group.id,
+                              label: group.title,
+                            })
                           }
                         >
                           <Trash2 className="w-3 h-3" />
@@ -579,14 +644,15 @@ export default function SurveyDetailPage() {
                                   <MoreHorizontal className="w-3.5 h-3.5" />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     className="text-destructive"
                                     onClick={() =>
-                                      removeQuestion.mutate({
+                                      setDeleteTarget({
+                                        type: 'question',
                                         sec_id: section.id,
                                         gid: group.id,
                                         gqid: gq.id,
+                                        label: gq.question.text,
                                       })
                                     }
                                   >
@@ -624,6 +690,18 @@ export default function SurveyDetailPage() {
       </div>
 
       <Separator className="my-6" />
+
+      <ConfirmDialog
+        open={deleteTarget.type !== 'none'}
+        message={
+          deleteTarget.type !== 'none'
+            ? `Delete "${deleteTarget.label}"? This cannot be undone.`
+            : ''
+        }
+        isPending={isDeletePending}
+        onConfirm={confirmDelete}
+        onClose={() => setDeleteTarget({ type: 'none' })}
+      />
 
       {/* Dialogs */}
       {dialog.type === 'section' && (
