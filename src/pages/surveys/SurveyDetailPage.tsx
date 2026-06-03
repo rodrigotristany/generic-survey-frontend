@@ -67,8 +67,8 @@ function AddSectionDialog({
   const qc = useQueryClient()
   const mutation = useMutation({
     mutationFn: () => surveysApi.addSection(sid, { title, order: sectionsCount }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', sid] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', sid] })
       toast.success('Section added')
       setTitle('')
       onClose()
@@ -113,8 +113,8 @@ function AddGroupDialog({
   const mutation = useMutation({
     mutationFn: () =>
       surveysApi.addGroup(sid, section.id, { title, order: section.groups.length }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', sid] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', sid] })
       toast.success('Group added')
       setTitle('')
       onClose()
@@ -183,8 +183,8 @@ function AddQuestionDialog({
         order: group.group_questions.length,
       })
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', sid] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', sid] })
       toast.success('Question added')
       onClose()
     },
@@ -198,8 +198,8 @@ function AddQuestionDialog({
         is_required: isRequired,
         order: group.group_questions.length,
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['survey', sid] })
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['survey', sid] })
       toast.success('Question linked')
       onClose()
     },
