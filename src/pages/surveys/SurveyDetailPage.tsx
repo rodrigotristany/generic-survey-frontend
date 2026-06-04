@@ -10,6 +10,7 @@ import {
   MoreHorizontal,
   Link as LinkIcon,
   BarChart2,
+  Eye,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { surveysApi } from '@/lib/surveys'
@@ -497,6 +498,14 @@ export default function SurveyDetailPage() {
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/surveys/${id}/preview`)}
+          >
+            <Eye className="w-4 h-4 sm:mr-1.5" />
+            <span className="hidden sm:inline">Preview</span>
+          </Button>
           <Button
             variant="outline"
             size="sm"

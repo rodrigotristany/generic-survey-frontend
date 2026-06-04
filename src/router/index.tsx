@@ -7,6 +7,7 @@ import ProtectedRoute from '@/components/layout/ProtectedRoute'
 import SurveysPage from '@/pages/surveys/SurveysPage'
 import SurveyDetailPage from '@/pages/surveys/SurveyDetailPage'
 import ResponsesPage from '@/pages/surveys/ResponsesPage'
+import SurveyPreviewPage from '@/pages/surveys/SurveyPreviewPage'
 import QuestionLibraryPage from '@/pages/questions/QuestionLibraryPage'
 
 export const router = createBrowserRouter([
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
           { path: '/surveys', element: <SurveysPage /> },
           { path: '/surveys/:id', element: <SurveyDetailPage /> },
           { path: '/surveys/:id/responses', element: <ResponsesPage /> },
+          { path: '/surveys/:id/preview', element: <SurveyPreviewPage /> },
           { path: '/questions', element: <QuestionLibraryPage /> },
         ],
       },
