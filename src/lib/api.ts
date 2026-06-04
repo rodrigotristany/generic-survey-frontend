@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { TokenResponse } from '@/types'
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://zjcxv39p-8000.brs.devtunnels.ms/'
 
 export const api = axios.create({
   baseURL: BASE_URL,

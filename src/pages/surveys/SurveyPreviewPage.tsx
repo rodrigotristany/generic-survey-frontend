@@ -134,6 +134,43 @@ export default function SurveyPreviewPage() {
 
       <Separator className="mb-8" />
 
+      {/* Personal information */}
+      <div className="mb-10">
+        <h2 className="text-base font-semibold mb-4">Personal Information</h2>
+        <div className="border rounded-lg overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 py-4">
+            {[
+              { label: 'Name', type: 'text', placeholder: 'Your name…' },
+              { label: 'Surname', type: 'text', placeholder: 'Your surname…' },
+              { label: 'Sport', type: 'text', placeholder: 'Your sport…' },
+              { label: 'Phone', type: 'tel', placeholder: 'Your phone number…' },
+              { label: 'Birthdate', type: 'date', placeholder: '' },
+            ].map(({ label, type, placeholder }) => (
+              <div key={label} className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-muted-foreground">{label}</label>
+                <input
+                  type={type}
+                  disabled
+                  placeholder={placeholder}
+                  className="w-full rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground cursor-not-allowed"
+                />
+              </div>
+            ))}
+            <div className="flex flex-col gap-1 sm:col-span-2">
+              <label className="text-xs font-medium text-muted-foreground">Address</label>
+              <input
+                type="text"
+                disabled
+                placeholder="Your address…"
+                className="w-full rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Separator className="mb-8" />
+
       {/* Sections */}
       {survey.sections.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground text-sm">
