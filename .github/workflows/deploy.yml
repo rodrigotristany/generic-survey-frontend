@@ -42,4 +42,4 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           source: dist/*
           target: ${{ secrets.VM_TARGET_PATH }}
-          strip_components: 1
+          debug: true
